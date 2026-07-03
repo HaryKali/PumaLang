@@ -1,5 +1,5 @@
-from zerolang.builtins import BuiltInFunction
-from zerolang.values import Number, SymbolTable
+from pumalang.builtins import BuiltInFunction
+from pumalang.values import Number, SymbolTable
 
 global_symbol_table = SymbolTable()
 global_symbol_table.set("NULL", Number.null)

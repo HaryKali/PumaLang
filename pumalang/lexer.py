@@ -1,5 +1,5 @@
-from zerolang.errors import IllegalCharError, ExpectedCharError
-from zerolang.tokens import (
+from pumalang.errors import IllegalCharError, ExpectedCharError
+from pumalang.tokens import (
     Token,
     Position,
     TT_FLOAT,

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-ZeroLang 单文件版命令行入口（onefile/ZeroLang.py）
+PumaLang single-file shell (onefile/pumalang.py)
 
-用法:
-    python onefile/shell.py                  # 交互式 REPL
-    python onefile/shell.py script.zero      # 运行脚本
+Usage:
+    python onefile/shell.py                      # interactive REPL
+    python onefile/shell.py script.pumalang      # run a script
 """
 
 import argparse
@@ -15,7 +15,7 @@ ONEFILE_DIR = Path(__file__).resolve().parent
 if str(ONEFILE_DIR) not in sys.path:
     sys.path.insert(0, str(ONEFILE_DIR))
 
-import ZeroLang
+import pumalang
 
 
 class Colors:
@@ -55,8 +55,8 @@ def format_value(value):
 
 def print_banner():
     print(f"{Colors.CYAN}{Colors.BOLD}{BANNER}{Colors.RESET}")
-    print(f"{Colors.GREEN}ZeroLang Shell v{VERSION}{Colors.RESET}")
-    print("输入 exit / quit / bye 或按 Ctrl+C 退出")
+    print(f"{Colors.GREEN}PumaLang Shell v{VERSION}{Colors.RESET}")
+    print("Type exit, quit, bye, or press Ctrl+C to leave")
     print("=" * 60)
 
 
@@ -64,7 +64,7 @@ def execute_source(filename, source, *, echo_filename=False):
     if echo_filename:
         print(f"{Colors.GREEN}Running: {filename}{Colors.RESET}")
 
-    result, error = ZeroLang.run(filename, source)
+    result, error = pumalang.run(filename, source)
     if error:
         print(f"{Colors.RED}{error.as_string()}{Colors.RESET}")
         return False
@@ -80,15 +80,15 @@ def run_repl():
 
     while True:
         try:
-            text = input(f"{Colors.GREEN}{Colors.BOLD}ZeroLang (onefile) > {Colors.RESET}")
+            text = input(f"{Colors.GREEN}{Colors.BOLD}PumaLang (onefile) > {Colors.RESET}")
         except (EOFError, KeyboardInterrupt):
-            print(f"\n{Colors.YELLOW}再见！{Colors.RESET}")
+            print(f"\n{Colors.YELLOW}Goodbye.{Colors.RESET}")
             break
 
         if not text.strip():
             continue
         if text.strip().lower() in EXIT_COMMANDS:
-            print(f"{Colors.YELLOW}会话已结束。{Colors.RESET}")
+            print(f"{Colors.YELLOW}Session ended.{Colors.RESET}")
             break
 
         execute_source("<stdin>", text)
@@ -96,16 +96,16 @@ def run_repl():
 
 def run_file(filepath: Path):
     if not filepath.is_file():
-        print(f"{Colors.RED}错误：找不到文件 {filepath}{Colors.RESET}")
+        print(f"{Colors.RED}Error: file not found: {filepath}{Colors.RESET}")
         sys.exit(1)
 
-    if filepath.suffix != ".zero":
-        print(f"{Colors.YELLOW}警告：文件扩展名不是 .zero{Colors.RESET}")
+    if filepath.suffix != ".pumalang":
+        print(f"{Colors.YELLOW}Warning: file does not use the .pumalang extension.{Colors.RESET}")
 
     try:
         source = filepath.read_text(encoding="utf-8")
     except OSError as exc:
-        print(f"{Colors.RED}读取文件失败：{exc}{Colors.RESET}")
+        print(f"{Colors.RED}Failed to read file: {exc}{Colors.RESET}")
         sys.exit(1)
 
     if not execute_source(str(filepath.resolve()), source, echo_filename=True):
@@ -114,26 +114,26 @@ def run_file(filepath: Path):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        prog="zerolang-onefile",
-        description="ZeroLang 单文件版解释器命令行入口",
+        prog="pumalang-onefile",
+        description="PumaLang single-file interpreter shell",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
-            "示例:\n"
+            "Examples:\n"
             "  python onefile/shell.py\n"
-            "  python onefile/shell.py ../examples/hello_world.zero"
+            "  python onefile/shell.py examples/hello_world.pumalang"
         ),
     )
     parser.add_argument(
         "file",
         nargs="?",
         type=Path,
-        help="要执行的 .zero 源文件（省略则进入 REPL）",
+        help="Optional .pumalang source file; opens REPL when omitted",
     )
     parser.add_argument(
         "-v",
         "--version",
         action="version",
-        version=f"ZeroLang {VERSION}",
+        version=f"PumaLang {VERSION}",
     )
 
     args = parser.parse_args(argv)

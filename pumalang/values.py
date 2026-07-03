@@ -1,7 +1,7 @@
 import math
 
-from zerolang.errors import RTError
-from zerolang.rtresult import RTResult
+from pumalang.errors import RTError
+from pumalang.rtresult import RTResult
 
 
 class Value:
@@ -410,7 +410,7 @@ class Function(BaseFunction):
         self.should_return_null = should_return_null
 
     def execute(self, args):
-        from zerolang.interpreter import Interpreter
+        from pumalang.interpreter import Interpreter
 
         res = RTResult()
         interpreter = Interpreter()

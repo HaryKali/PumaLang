@@ -1,5 +1,5 @@
-from zerolang.errors import InvalidSyntaxError
-from zerolang.nodes import (
+from pumalang.errors import InvalidSyntaxError
+from pumalang.nodes import (
     ListNode,
     DictNode,
     SubscriptNode,
@@ -18,7 +18,7 @@ from zerolang.nodes import (
     FuncDefNode,
     CallNode,
 )
-from zerolang.tokens import (
+from pumalang.tokens import (
     TT_EOF,
     TT_INT,
     TT_FLOAT,

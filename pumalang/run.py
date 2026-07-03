@@ -1,8 +1,8 @@
-from zerolang.globals import global_symbol_table
-from zerolang.interpreter import Interpreter
-from zerolang.lexer import Lexer
-from zerolang.parser import Parser
-from zerolang.values import Context
+from pumalang.globals import global_symbol_table
+from pumalang.interpreter import Interpreter
+from pumalang.lexer import Lexer
+from pumalang.parser import Parser
+from pumalang.values import Context
 
 
 def run(fn, text, debug=False):

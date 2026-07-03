@@ -1,8 +1,8 @@
 import os
 
-from zerolang.errors import RTError
-from zerolang.rtresult import RTResult
-from zerolang.values import BaseFunction, Number, String, List, Function
+from pumalang.errors import RTError
+from pumalang.rtresult import RTResult
+from pumalang.values import BaseFunction, Number, String, List, Function
 
 
 class BuiltInFunction(BaseFunction):
@@ -193,7 +193,7 @@ class BuiltInFunction(BaseFunction):
     execute_sort.arg_names = ["target_list", "reverse"]
 
     def execute_run(self, exec_ctx):
-        from zerolang.run import run
+        from pumalang.run import run
 
         fn = exec_ctx.symbol_table.get("fn")
 

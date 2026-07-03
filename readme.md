@@ -1,75 +1,82 @@
-# ZeroLang
+# PumaLang
 
-ZeroLang is a small interpreted programming language implemented in Python. It is expression-oriented, dynamically typed, and designed for learning language implementation fundamentals.
+PumaLang is a small interpreted programming language implemented in Python. It is expression-oriented, dynamically typed, and designed for learning language implementation fundamentals.
 
-Based on: https://github.com/davidcallanan/py-myopl-code
+Based on: [py-myopl-code](https://github.com/davidcallanan/py-myopl-code)
 
 ## Highlights
 
 - Simple syntax with familiar operators
-- Variables, strings, lists, dictionaries (hash maps), and user-defined functions
-- Control flow including `if`, `for`, `while`, `return`, `break`, and `continue`
-- Built-in functions for input/output and list manipulation
-- Modular interpreter package under `zerolang/`
-- Professional CLI with **basic** and **debug** run modes
-- Legacy single-file implementation preserved under `onefile/`
+- Variables, strings, lists, dictionaries, and user-defined functions
+- Control flow: `if`, `for`, `while`, `return`, `break`, `continue`
+- Built-in I/O and list manipulation functions
+- Modular interpreter package under `pumalang/`
+- CLI shell with **basic** / **debug** modes
+- Legacy single-file implementation under `onefile/`
 
 ## Requirements
 
-- Python 3.10 or higher
+- Python 3.10+
 
 ## Quick Start
 
-From the project root, start the interactive shell (recommended):
+Start the interactive shell from the project root:
 
 ```bash
-python -m zerolang.shell
+python -m pumalang.shell
 ```
 
-Run a script file:
+Run a `.pumalang` script:
 
 ```bash
-python -m zerolang.shell examples/hello_world.zero
+python -m pumalang.shell examples/hello_world.pumalang
 ```
 
-Enable debug mode (lexer/parser diagnostics):
+Run with lexer/parser diagnostics:
 
 ```bash
-python -m zerolang.shell -d examples/test_arithmetic.zero
+python -m pumalang.shell -d examples/test_arithmetic.pumalang
 ```
 
-You can also invoke the shell directly:
+Alternative entry point:
 
 ```bash
-python zerolang/shell.py examples/hello_world.zero
+python pumalang/shell.py examples/hello_world.pumalang
 ```
 
-### Shell Run Modes
+## CLI Reference
 
-| Mode | Flag | Behavior |
-|------|------|----------|
-| **Basic** (default) | *(none)* | Only program output (`print`, etc.) and errors |
-| **Debug** | `-d` / `--debug` | Also prints lexer/parser diagnostics |
+| Command | Description |
+|---------|-------------|
+| `python -m pumalang.shell` | Open REPL (basic mode) |
+| `python -m pumalang.shell <file>` | Execute a `.pumalang` file |
+| `python -m pumalang.shell -d <file>` | Execute with debug diagnostics |
+| `python -m pumalang.shell -v` | Print version and exit |
 
-The shell does **not** echo interpreter return values automatically. Use `print()` when you want output.
+### Run Modes
 
-### Legacy Single-File Version
+| Mode | Flag | Output |
+|------|------|--------|
+| **Basic** (default) | — | Program `print` output and errors only |
+| **Debug** | `-d` / `--debug` | Also shows lexer/parser diagnostics |
 
-The original all-in-one implementation is kept under `onefile/`:
+The shell does **not** echo interpreter return values. Use `print()` for visible output.
+
+### Legacy Single-File Shell
 
 ```bash
 python onefile/shell.py
-python onefile/shell.py examples/hello_world.zero
+python onefile/shell.py examples/hello_world.pumalang
 ```
 
-This version always prints lexical/syntax debug messages during execution.
+The `onefile/` interpreter always prints lexical/syntax debug messages.
 
-## Using ZeroLang from Python
+## Using PumaLang from Python
 
-Recommended (modular package):
+Modular package (recommended):
 
 ```python
-from zerolang import run
+from pumalang import run
 
 value, error = run("<stdin>", 'print("Hello World")')
 if error:
@@ -79,7 +86,7 @@ if error:
 With debug diagnostics:
 
 ```python
-from zerolang import run
+from pumalang import run
 
 value, error = run("<stdin>", "1 + 2", debug=True)
 ```
@@ -91,16 +98,14 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path("onefile").resolve()))
-import ZeroLang
+import pumalang
 
-value, error = ZeroLang.run("<stdin>", 'print("Hello World")')
+value, error = pumalang.run("<stdin>", 'print("Hello World")')
 ```
 
-## Program Structure
+## Language Overview
 
-ZeroLang programs are parsed as sequences of statements. Statements can be separated by semicolons (`;`) or physical newlines. Both are supported.
-
-Example:
+PumaLang source files use the **`.pumalang`** extension. Programs are sequences of statements separated by `;` or newlines.
 
 ```plaintext
 var x = 1
@@ -108,55 +113,39 @@ var y = 2
 print(x + y)
 ```
 
-Single-line comments begin with `#`.
+Comments start with `#`.
 
-## Keywords
+### Keywords
 
 ```
 var and or not if then elif else for to step while func end return continue break
 ```
 
-## Data Types
+### Data Types
 
-- Number (integer or float)
-- String
-- List
-- Dict (string or numeric keys)
-- Function
-- NULL
-- Boolean-like values (`TRUE`, `FALSE`, `True`, `False`)
+| Type | Notes |
+|------|-------|
+| Number | Integer or float |
+| String | Double-quoted literals |
+| List | `[1, 2, 3]` |
+| Dict | `{"key": value}` — keys must be strings or numbers |
+| Function | User-defined or built-in |
+| NULL | `NULL` |
+| Boolean | `TRUE`, `FALSE`, `True`, `False` |
 
-## Operators
+### Operators
 
-### Arithmetic
+**Arithmetic:** `+` `-` `*` `/` `^`
 
-| Operator | Example | Result |
-|----------|---------|--------|
-| `+` | `1 + 2` | `3` |
-| `-` | `2 - 1` | `1` |
-| `*` | `2 * 2` | `4` |
-| `/` | `2 / 2` | `1.0` |
-| `^` | `2 ^ 2` | `4` |
+**Comparison:** `==` `!=` `<` `>` `<=` `>=`
 
-### Comparison
-
-`==` `!=` `<` `>` `<=` `>=`
-
-### Logical
-
-`and` `or` `not`
-
-## Variables
-
-```plaintext
-var x = 10
-var name = "ZeroLang"
-var arr = [1, 2, 3]
-```
+**Logical:** `and` `or` `not`
 
 ## Control Flow
 
-### If Expression
+### If
+
+Expression form:
 
 ```plaintext
 if x > 0 then 1 elif x == 0 then 0 else -1
@@ -172,14 +161,14 @@ else
 end
 ```
 
-### For Loop
+### For
 
 ```plaintext
 for i = 0 to 5 then print(i)
 for i = 10 to 0 step -2 then print(i)
 ```
 
-### While Loop
+### While
 
 ```plaintext
 var i = 0
@@ -188,14 +177,14 @@ while i < 3 then var i = i + 1
 
 ## Functions
 
-Single expression:
+Arrow (single-expression) form:
 
 ```plaintext
 func add(a, b) -> a + b
 print(add(2, 3))
 ```
 
-With block and return:
+Block form with `return`:
 
 ```plaintext
 func sum_to(n)
@@ -218,151 +207,103 @@ print(l)
 print(len(l))
 ```
 
-List access uses division syntax:
+Index with `/` or `[]`:
 
 ```plaintext
 var seq = [10, 20, 30]
 print(seq / 1)
-```
-
-You can also index lists with square brackets (see [Dictionaries](#dictionaries)).
-
-## Dictionaries
-
-Dictionaries are unordered maps from keys to values. Literal syntax mirrors common brace notation: comma-separated `key: value` pairs inside `{` `}`. Keys and values are arbitrary expressions; at runtime each **key** must evaluate to a **string** or **number**.
-
-```plaintext
-var d = {"a": 1, "b": 2}
-var k = "a"
-print(d[k])
-print(d["b"])
-```
-
-Empty dictionary:
-
-```plaintext
-var empty = {}
-```
-
-Use square brackets for lookup: `dict[key]`. The same subscript syntax works for lists, so `seq[1]` is equivalent to `seq / 1` for numeric indices.
-
-```plaintext
-var seq = [10, 20, 30]
 print(seq[1])
 ```
 
+## Dictionaries
+
+```plaintext
+var d = {"a": 1, "b": 2}
+print(d["a"])
+print(d["b"])
+```
+
+Empty dict: `var empty = {}`
+
 ## Built-in Functions
 
-Core functions:
+| Category | Functions |
+|----------|-----------|
+| I/O | `print`, `print_ret`, `input`, `input_int`, `clear` / `cls` |
+| Type checks | `is_number`, `is_string`, `is_list`, `is_function` |
+| Lists | `append`, `pop`, `extend`, `len`, `sort` |
+| Scripts | `run(filename)` |
 
-- `print(value)`
-- `print_ret(value)`
-- `input()`
-- `input_int()`
-- `clear()` / `cls()`
+Aliases: `is_sum`, `is_str`, `is_fun`, `exetend`.
 
-Type checking:
+## Running Scripts
 
-- `is_number(value)`
-- `is_string(value)`
-- `is_list(value)`
-- `is_function(value)`
-
-List operations:
-
-- `append(list, value)`
-- `pop(list, index)`
-- `extend(listA, listB)`
-- `len(list)`
-- `sort(target_list, reverse)`
-
-Script execution:
-
-- `run(filename)`
-
-Compatibility aliases (`is_sum`, `is_str`, `is_fun`, `exetend`) are also registered.
-
-## Running Scripts from the REPL
-
-From within the REPL (`python -m zerolang.shell`):
+From the REPL:
 
 ```plaintext
-run("examples/test_fibonacci.zero")
+run("examples/test_fibonacci.pumalang")
 ```
 
-Launcher scripts are also supported:
-
-```plaintext
-# examples/run_fibonacci.zero
-run("examples/test_fibonacci.zero")
-```
-
-Then run from the shell:
+Or use a launcher script:
 
 ```bash
-python -m zerolang.shell examples/run_fibonacci.zero
+python -m pumalang.shell examples/run_fibonacci.pumalang
 ```
 
 ## Examples
 
-The `examples/` directory includes:
-
-- `hello_world.zero`
-- `test_arithmetic.zero`
-- `test_if.zero`
-- `test_loops.zero`
-- `test_function.zero`
-- `test_lists.zero`
-- `test_dict.zero`
-- `test_builtins.zero`
-- `test_comments_newlines.zero`
-- `test_fibonacci.zero`
-- `test_fibonacci_iterative.zero`
-- `run_fibonacci.zero`
-- `run_fibonacci2.zero`
+| File | Topic |
+|------|-------|
+| `hello_world.pumalang` | Hello World |
+| `test_arithmetic.pumalang` | Arithmetic |
+| `test_if.pumalang` | Conditionals |
+| `test_loops.pumalang` | Loops |
+| `test_function.pumalang` | Functions |
+| `test_lists.pumalang` | Lists |
+| `test_dict.pumalang` | Dictionaries |
+| `test_builtins.pumalang` | Built-ins |
+| `test_comments_newlines.pumalang` | Comments & newlines |
+| `test_fibonacci.pumalang` | Recursive Fibonacci |
+| `test_fibonacci_iterative.pumalang` | Iterative Fibonacci |
+| `run_fibonacci.pumalang` | Script launcher |
 
 ## Error Reporting
 
-ZeroLang provides detailed error reporting for:
-
-- Lexical errors
-- Syntax errors
-- Runtime errors (with traceback)
-
-Errors include source location information using arrows to point to the offending code.
+PumaLang reports lexical, syntax, and runtime errors with source locations and caret arrows pointing at the offending code. Runtime errors include a traceback through function call contexts.
 
 ## Project Structure
 
 ```
-ZeroLang/
-├── zerolang/                  # Main modular interpreter (recommended)
+PumaLang/
+├── pumalang/                  # Modular interpreter (recommended)
 │   ├── __init__.py            # Public package API
 │   ├── shell.py               # CLI / REPL entry point
 │   ├── run.py                 # Compile-and-run driver
 │   ├── lexer.py               # Tokenizer
 │   ├── parser.py              # Recursive descent parser
-│   ├── interpreter.py         # AST visitor and evaluation
+│   ├── interpreter.py         # AST visitor / evaluator
 │   ├── nodes.py               # AST node definitions
-│   ├── tokens.py              # Token definitions and Position
+│   ├── tokens.py              # Tokens and Position
 │   ├── values.py              # Runtime value types
 │   ├── builtins.py            # Built-in functions
 │   ├── globals.py             # Global symbol table
-│   ├── errors.py              # Error classes and formatting
-│   ├── strings_with_arrows.py # Source error pointer visualization
-│   └── rtresult.py            # Runtime result / control flow
-├── onefile/                   # Legacy single-file implementation
-│   ├── ZeroLang.py            # All-in-one interpreter
+│   ├── errors.py              # Error classes
+│   ├── strings_with_arrows.py # Error pointer rendering
+│   └── rtresult.py            # Control-flow result wrapper
+├── onefile/                   # Legacy single-file interpreter
+│   ├── pumalang.py
 │   ├── strings_with_arrows.py
-│   └── shell.py               # CLI for the legacy version
-├── examples/                  # Sample .zero programs
-├── grammar.txt                # Language grammar notes
+│   └── shell.py
+├── examples/                  # Sample .pumalang programs
+├── grammar.txt
 ├── LICENSE.txt
 └── readme.md
 ```
 
 ## Notes
 
-- The modular shell defaults to **basic mode**; use `-d` for lexer/parser debug output
-- The legacy `onefile/` interpreter always prints lexical/syntax debug messages
-- All variables share a single global symbol table
-- The implementation prioritizes educational clarity over performance optimizations
+- Source files use the `.pumalang` extension
+- Modular shell defaults to **basic mode**; pass `-d` for debug output
+- Return values are not printed automatically — use `print()`
+- All variables currently share a single global symbol table
+- Implementation prioritizes educational clarity over performance

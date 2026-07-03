@@ -1,5 +1,5 @@
-from zerolang.errors import RTError
-from zerolang.nodes import (
+from pumalang.errors import RTError
+from pumalang.nodes import (
     ListNode,
     DictNode,
     SubscriptNode,
@@ -18,8 +18,8 @@ from zerolang.nodes import (
     FuncDefNode,
     CallNode,
 )
-from zerolang.rtresult import RTResult
-from zerolang.tokens import (
+from pumalang.rtresult import RTResult
+from pumalang.tokens import (
     TT_PLUS,
     TT_MINUS,
     TT_MUL,
@@ -34,7 +34,7 @@ from zerolang.tokens import (
     TT_GTE,
     TT_KEYWORD,
 )
-from zerolang.values import Value, Number, String, List, Dict, Function
+from pumalang.values import Value, Number, String, List, Dict, Function
 
 
 class Interpreter:

@@ -1,17 +1,17 @@
-from zerolang.builtins import BuiltInFunction
-from zerolang.errors import (
+from pumalang.builtins import BuiltInFunction
+from pumalang.errors import (
     Error,
     IllegalCharError,
     ExpectedCharError,
     InvalidSyntaxError,
     RTError,
 )
-from zerolang.globals import global_symbol_table
-from zerolang.interpreter import Interpreter
-from zerolang.lexer import Lexer
-from zerolang.parser import Parser
-from zerolang.run import run
-from zerolang.values import (
+from pumalang.globals import global_symbol_table
+from pumalang.interpreter import Interpreter
+from pumalang.lexer import Lexer
+from pumalang.parser import Parser
+from pumalang.run import run
+from pumalang.values import (
     BaseFunction,
     Context,
     Function,

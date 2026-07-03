@@ -6,7 +6,7 @@ from pumalang.errors import (
     InvalidSyntaxError,
     RTError,
 )
-from pumalang.globals import global_symbol_table
+from pumalang.globals import create_program_scope, global_symbol_table
 from pumalang.interpreter import Interpreter
 from pumalang.lexer import Lexer
 from pumalang.parser import Parser
@@ -25,6 +25,7 @@ from pumalang.values import (
 __all__ = [
     "run",
     "global_symbol_table",
+    "create_program_scope",
     "Lexer",
     "Parser",
     "Interpreter",

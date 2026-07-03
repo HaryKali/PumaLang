@@ -305,5 +305,7 @@ PumaLang/
 - Source files use the `.pumalang` extension
 - Modular shell defaults to **basic mode**; pass `-d` for debug output
 - Return values are not printed automatically — use `print()`
-- All variables currently share a single global symbol table
+- Each script run uses a fresh **program scope** layered on the global builtin table
+- REPL sessions keep one program scope for the whole session
+- Function bodies use local scopes; locals do not overwrite builtins in the global table
 - Implementation prioritizes educational clarity over performance

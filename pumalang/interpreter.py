@@ -34,7 +34,7 @@ from pumalang.tokens import (
     TT_GTE,
     TT_KEYWORD,
 )
-from pumalang.values import Value, Number, String, List, Dict, Function
+from pumalang.values import Value, Number, String, List, Dict, Function, SymbolTable
 
 
 class Interpreter:
@@ -214,7 +214,7 @@ class Interpreter:
         var_name = node.var_name_tok.value
         value = context.symbol_table.get(var_name)
 
-        if not value:
+        if value is SymbolTable._MISSING:
             return res.failure(RTError(
                 node.pos_start, node.pos_end,
                 f"'{var_name}' is not defined",

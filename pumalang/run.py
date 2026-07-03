@@ -1,11 +1,11 @@
-from pumalang.globals import global_symbol_table
+from pumalang.globals import create_program_scope
 from pumalang.interpreter import Interpreter
 from pumalang.lexer import Lexer
 from pumalang.parser import Parser
 from pumalang.values import Context
 
 
-def run(fn, text, debug=False):
+def run(fn, text, debug=False, program_scope=None):
     lexer = Lexer(fn, text)
     tokens, error = lexer.make_tokens()
     if error:
@@ -22,7 +22,7 @@ def run(fn, text, debug=False):
 
     interpreter = Interpreter()
     context = Context("<program>")
-    context.symbol_table = global_symbol_table
+    context.symbol_table = program_scope if program_scope is not None else create_program_scope()
     result = interpreter.visit(ast.node, context)
 
     return result.value, result.error

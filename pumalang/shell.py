@@ -27,6 +27,7 @@ def _ensure_package_path():
 
 _ensure_package_path()
 
+from pumalang.globals import create_program_scope
 from pumalang.run import run
 
 
@@ -205,6 +206,7 @@ def execute_source(
     *,
     mode: RunMode = RunMode.BASIC,
     echo_filename: bool = False,
+    program_scope=None,
 ):
     """
     Compile and run source code.
@@ -217,7 +219,7 @@ def execute_source(
     if echo_filename and debug:
         print(style.paint("muted", f"Running: {filename}", dim=True))
 
-    _result, error = run(filename, source, debug=debug)
+    _result, error = run(filename, source, debug=debug, program_scope=program_scope)
     if error:
         print(style.paint("red", error.as_string()))
         return False
@@ -227,6 +229,7 @@ def execute_source(
 
 def run_repl(*, mode: RunMode = RunMode.BASIC):
     print_banner(mode)
+    program_scope = create_program_scope()
 
     prompt = style.paint("green", "PumaLang > ", bold=True)
 
@@ -243,7 +246,7 @@ def run_repl(*, mode: RunMode = RunMode.BASIC):
             print(style.paint("yellow", "Session ended."))
             break
 
-        execute_source("<stdin>", text, mode=mode)
+        execute_source("<stdin>", text, mode=mode, program_scope=program_scope)
 
 
 def run_file(filepath: Path, *, mode: RunMode = RunMode.BASIC):

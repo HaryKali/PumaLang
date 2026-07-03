@@ -343,21 +343,61 @@ class Context:
 
 
 class SymbolTable:
-    def __init__(self, parent=None):
+    """Lexical symbol table with parent-chain lookup."""
+
+    _MISSING = object()
+
+    def __init__(self, parent=None, *, is_global=False):
         self.symbols = {}
         self.parent = parent
+        self.is_global = is_global
 
     def get(self, name):
-        value = self.symbols.get(name, None)
-        if value is None and self.parent:
+        if name in self.symbols:
+            return self.symbols[name]
+        if self.parent:
             return self.parent.get(name)
-        return value
+        return self._MISSING
+
+    def has(self, name):
+        return self.get(name) is not self._MISSING
+
+    def has_local(self, name):
+        return name in self.symbols
 
     def set(self, name, value):
+        """Bind a name in the current scope only."""
         self.symbols[name] = value
 
-    def remove(self, name):
+    def set_global(self, name, value):
+        """Bind a name on the root global symbol table."""
+        self.root.set(name, value)
+
+    def remove_local(self, name):
         del self.symbols[name]
+
+    @property
+    def root(self):
+        table = self
+        while table.parent is not None:
+            table = table.parent
+        return table
+
+    def keys(self):
+        seen = set()
+        names = []
+
+        def collect(table):
+            if table is None:
+                return
+            collect(table.parent)
+            for name in table.symbols:
+                if name not in seen:
+                    seen.add(name)
+                    names.append(name)
+
+        collect(self)
+        return names
 
 
 class BaseFunction(Value):
@@ -366,8 +406,13 @@ class BaseFunction(Value):
         self.name = name or "<anonymous>"
 
     def generate_new_context(self):
+        enclosing = (
+            self.context.symbol_table
+            if self.context and self.context.symbol_table is not None
+            else None
+        )
         new_context = Context(self.name, self.context, self.pos_start)
-        new_context.symbol_table = SymbolTable(new_context.parent.symbol_table)
+        new_context.symbol_table = SymbolTable(parent=enclosing)
         return new_context
 
     def check_args(self, arg_names, args):

@@ -5,18 +5,20 @@ from zerolang.parser import Parser
 from zerolang.values import Context
 
 
-def run(fn, text):
+def run(fn, text, debug=False):
     lexer = Lexer(fn, text)
     tokens, error = lexer.make_tokens()
     if error:
         return None, error
-    print("\033[32m" + "DEBUG: Lexical Analysis OK！" + "\033[39m")
-    print(tokens)
+    if debug:
+        print("\033[32m" + "DEBUG: Lexical Analysis OK！" + "\033[39m")
+        print(tokens)
     parser = Parser(tokens)
     ast = parser.parse()
     if ast.error:
         return None, ast.error
-    print("\033[32m" + "DEBUG: Syntax Analysis OK！" + "\033[39m")
+    if debug:
+        print("\033[32m" + "DEBUG: Syntax Analysis OK！" + "\033[39m")
 
     interpreter = Interpreter()
     context = Context("<program>")

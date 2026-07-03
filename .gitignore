@@ -1,3 +1,5 @@
 __pycache__/
 .idea/
 .github/
+/zerolang/__pycache__
+/onefile/__pycache__

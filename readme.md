@@ -2,16 +2,17 @@
 
 ZeroLang is a small interpreted programming language implemented in Python. It is expression-oriented, dynamically typed, and designed for learning language implementation fundamentals.
 
-Based On: https://github.com/davidcallanan/py-myopl-code
+Based on: https://github.com/davidcallanan/py-myopl-code
 
 ## Highlights
 
 - Simple syntax with familiar operators
 - Variables, strings, lists, dictionaries (hash maps), and user-defined functions
-- Control flow including if, for, while, return, break, and continue
+- Control flow including `if`, `for`, `while`, `return`, `break`, and `continue`
 - Built-in functions for input/output and list manipulation
-- REPL support via shell.py
-- Ability to execute scripts using the built-in run function
+- Modular interpreter package under `zerolang/`
+- Professional CLI with **basic** and **debug** run modes
+- Legacy single-file implementation preserved under `onefile/`
 
 ## Requirements
 
@@ -19,27 +20,85 @@ Based On: https://github.com/davidcallanan/py-myopl-code
 
 ## Quick Start
 
-Run the interactive shell:
+From the project root, start the interactive shell (recommended):
 
 ```bash
-python shell.py
+python -m zerolang.shell
 ```
 
-Execute code from Python:
+Run a script file:
+
+```bash
+python -m zerolang.shell examples/hello_world.zero
+```
+
+Enable debug mode (lexer/parser diagnostics):
+
+```bash
+python -m zerolang.shell -d examples/test_arithmetic.zero
+```
+
+You can also invoke the shell directly:
+
+```bash
+python zerolang/shell.py examples/hello_world.zero
+```
+
+### Shell Run Modes
+
+| Mode | Flag | Behavior |
+|------|------|----------|
+| **Basic** (default) | *(none)* | Only program output (`print`, etc.) and errors |
+| **Debug** | `-d` / `--debug` | Also prints lexer/parser diagnostics |
+
+The shell does **not** echo interpreter return values automatically. Use `print()` when you want output.
+
+### Legacy Single-File Version
+
+The original all-in-one implementation is kept under `onefile/`:
+
+```bash
+python onefile/shell.py
+python onefile/shell.py examples/hello_world.zero
+```
+
+This version always prints lexical/syntax debug messages during execution.
+
+## Using ZeroLang from Python
+
+Recommended (modular package):
 
 ```python
+from zerolang import run
+
+value, error = run("<stdin>", 'print("Hello World")')
+if error:
+    print(error.as_string())
+```
+
+With debug diagnostics:
+
+```python
+from zerolang import run
+
+value, error = run("<stdin>", "1 + 2", debug=True)
+```
+
+Legacy single-file import:
+
+```python
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path("onefile").resolve()))
 import ZeroLang
 
 value, error = ZeroLang.run("<stdin>", 'print("Hello World")')
-if error:
-    print(error.as_string())
-else:
-    print(value)
 ```
 
 ## Program Structure
 
-ZeroLang programs are parsed as sequences of statements. Statements can be separated by semicolons (;) or physical newlines. Both are supported.
+ZeroLang programs are parsed as sequences of statements. Statements can be separated by semicolons (`;`) or physical newlines. Both are supported.
 
 Example:
 
@@ -49,7 +108,7 @@ var y = 2
 print(x + y)
 ```
 
-Single-line comments begin with #.
+Single-line comments begin with `#`.
 
 ## Keywords
 
@@ -65,24 +124,27 @@ var and or not if then elif else for to step while func end return continue brea
 - Dict (string or numeric keys)
 - Function
 - NULL
-- Boolean-like values (TRUE, FALSE, True, False)
+- Boolean-like values (`TRUE`, `FALSE`, `True`, `False`)
 
 ## Operators
 
 ### Arithmetic
-1. "+": 1+2=3
-2. "-": 1*2=2
-3. "\*": 2\*2=4
-4. "/": 2/2=1.0
-5. "^": 2^2=4
+
+| Operator | Example | Result |
+|----------|---------|--------|
+| `+` | `1 + 2` | `3` |
+| `-` | `2 - 1` | `1` |
+| `*` | `2 * 2` | `4` |
+| `/` | `2 / 2` | `1.0` |
+| `^` | `2 ^ 2` | `4` |
 
 ### Comparison
 
-== != < > <= >=
+`==` `!=` `<` `>` `<=` `>=`
 
 ### Logical
 
-and or not
+`and` `or` `not`
 
 ## Variables
 
@@ -193,36 +255,36 @@ print(seq[1])
 
 Core functions:
 
-- print(value)
-- print_ret(value)
-- input()
-- input_int()
-- clear() / cls()
+- `print(value)`
+- `print_ret(value)`
+- `input()`
+- `input_int()`
+- `clear()` / `cls()`
 
 Type checking:
 
-- is_number(value)
-- is_string(value)
-- is_list(value)
-- is_function(value)
+- `is_number(value)`
+- `is_string(value)`
+- `is_list(value)`
+- `is_function(value)`
 
 List operations:
 
-- append(list, value)
-- pop(list, index)
-- extend(listA, listB)
-- len(list)
-- sort(target_list, reverse)
+- `append(list, value)`
+- `pop(list, index)`
+- `extend(listA, listB)`
+- `len(list)`
+- `sort(target_list, reverse)`
 
 Script execution:
 
-- run(filename)
+- `run(filename)`
 
-Compatibility aliases (is_sum, is_str, is_fun, exetend) are also registered.
+Compatibility aliases (`is_sum`, `is_str`, `is_fun`, `exetend`) are also registered.
 
-## Running Scripts from Shell
+## Running Scripts from the REPL
 
-From within the REPL (python shell.py):
+From within the REPL (`python -m zerolang.shell`):
 
 ```plaintext
 run("examples/test_fibonacci.zero")
@@ -235,28 +297,29 @@ Launcher scripts are also supported:
 run("examples/test_fibonacci.zero")
 ```
 
-Then run:
+Then run from the shell:
 
-```plaintext
-run("examples/run_fibonacci.zero")
+```bash
+python -m zerolang.shell examples/run_fibonacci.zero
 ```
 
 ## Examples
 
-The examples directory includes:
+The `examples/` directory includes:
 
-- hello_world.zero
-- test_arithmetic.zero
-- test_if.zero
-- test_loops.zero
-- test_function.zero
-- test_lists.zero
-- test_dict.zero
-- test_builtins.zero
-- test_comments_newlines.zero
-- test_fibonacci.zero
-- test_fibonacci_iterative.zero
-- run_fibonacci.zero
+- `hello_world.zero`
+- `test_arithmetic.zero`
+- `test_if.zero`
+- `test_loops.zero`
+- `test_function.zero`
+- `test_lists.zero`
+- `test_dict.zero`
+- `test_builtins.zero`
+- `test_comments_newlines.zero`
+- `test_fibonacci.zero`
+- `test_fibonacci_iterative.zero`
+- `run_fibonacci.zero`
+- `run_fibonacci2.zero`
 
 ## Error Reporting
 
@@ -270,25 +333,36 @@ Errors include source location information using arrows to point to the offendin
 
 ## Project Structure
 
-- ZeroLang.py: All in one file
-- zerolang/: Main implementation package
-  - errors.py: Error classes and formatting
-  - tokens.py: Token definitions and Position class
-  - lexer.py: Tokenizer
-  - nodes.py: Abstract Syntax Tree node definitions
-  - parser.py: Recursive descent parser
-  - rtresult.py: Runtime result and control flow handling
-  - values.py: Runtime value types (Number, String, List, Dict, Function, etc.)
-  - builtins.py: Built-in functions implementation
-  - globals.py: Global symbol table initialization
-  - interpreter.py: AST visitor and evaluation logic
-  - run.py: Main execution driver
-- shell.py: Interactive REPL
-- strings_with_arrows.py: Source code error pointer visualization
-- examples/: Test scripts and examples
+```
+ZeroLang/
+├── zerolang/                  # Main modular interpreter (recommended)
+│   ├── __init__.py            # Public package API
+│   ├── shell.py               # CLI / REPL entry point
+│   ├── run.py                 # Compile-and-run driver
+│   ├── lexer.py               # Tokenizer
+│   ├── parser.py              # Recursive descent parser
+│   ├── interpreter.py         # AST visitor and evaluation
+│   ├── nodes.py               # AST node definitions
+│   ├── tokens.py              # Token definitions and Position
+│   ├── values.py              # Runtime value types
+│   ├── builtins.py            # Built-in functions
+│   ├── globals.py             # Global symbol table
+│   ├── errors.py              # Error classes and formatting
+│   ├── strings_with_arrows.py # Source error pointer visualization
+│   └── rtresult.py            # Runtime result / control flow
+├── onefile/                   # Legacy single-file implementation
+│   ├── ZeroLang.py            # All-in-one interpreter
+│   ├── strings_with_arrows.py
+│   └── shell.py               # CLI for the legacy version
+├── examples/                  # Sample .zero programs
+├── grammar.txt                # Language grammar notes
+├── LICENSE.txt
+└── readme.md
+```
 
 ## Notes
 
-- Debug messages for lexical and syntax analysis are currently enabled
+- The modular shell defaults to **basic mode**; use `-d` for lexer/parser debug output
+- The legacy `onefile/` interpreter always prints lexical/syntax debug messages
 - All variables share a single global symbol table
 - The implementation prioritizes educational clarity over performance optimizations

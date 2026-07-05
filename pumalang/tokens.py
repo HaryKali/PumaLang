@@ -47,7 +47,8 @@ KEYWORDS = [
     "end",
     "return",
     "continue",
-    "break"
+    "break",
+    "global",
 ]
 
 DIGITS = '0123456789'

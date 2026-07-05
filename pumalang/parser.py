@@ -6,6 +6,7 @@ from pumalang.nodes import (
     ReturnNode,
     ContinueNode,
     BreakNode,
+    GlobalNode,
     NumberNode,
     StringNode,
     VarAccessNode,
@@ -176,6 +177,9 @@ class Parser:
             self.advance()
             return res.success(BreakNode(pos_start, self.current_tok.pos_start.copy()))
 
+        if self.current_tok.matches(TT_KEYWORD, "global"):
+            return self.global_stmt()
+
         expr = res.register(self.expr())
         if res.error:
             return res.failure(InvalidSyntaxError(
@@ -183,6 +187,46 @@ class Parser:
                 "Expected return , continue, break, '+', '-', '*', '/', '^', '==', '!=', '<', '>', <=', '>=', 'and' or 'or'"
             ))
         return res.success(expr)
+
+    def global_stmt(self):
+        res = ParseResult()
+        pos_start = self.current_tok.pos_start.copy()
+
+        if not self.current_tok.matches(TT_KEYWORD, "global"):
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected 'global'"
+            ))
+        res.register_advancement()
+        self.advance()
+
+        if self.current_tok.type != TT_IDENTIFIER:
+            return res.failure(InvalidSyntaxError(
+                self.current_tok.pos_start, self.current_tok.pos_end,
+                "Expected identifier after 'global'"
+            ))
+
+        var_name_toks = [self.current_tok]
+        res.register_advancement()
+        self.advance()
+
+        while self.current_tok.type == TT_COMMA:
+            res.register_advancement()
+            self.advance()
+            if self.current_tok.type != TT_IDENTIFIER:
+                return res.failure(InvalidSyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end,
+                    "Expected identifier after ',' in global statement"
+                ))
+            var_name_toks.append(self.current_tok)
+            res.register_advancement()
+            self.advance()
+
+        return res.success(GlobalNode(
+            var_name_toks,
+            pos_start,
+            self.current_tok.pos_start.copy(),
+        ))
 
     def if_expr(self):
         res = ParseResult()

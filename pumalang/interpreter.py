@@ -15,6 +15,7 @@ from pumalang.nodes import (
     ContinueNode,
     BreakNode,
     ReturnNode,
+    GlobalNode,
     FuncDefNode,
     CallNode,
 )
@@ -45,6 +46,30 @@ class Interpreter:
 
     def no_visit_method(self, node, context):
         raise Exception(f'No visit_{type(node).__name__} method defined')
+
+    def collect_global_names(self, node):
+        """Collect global declarations from a function body AST."""
+        names = set()
+
+        if isinstance(node, GlobalNode):
+            for var_name_tok in node.var_name_toks:
+                names.add(var_name_tok.value)
+        elif isinstance(node, ListNode):
+            for child in node.element_nodes:
+                names |= self.collect_global_names(child)
+        elif isinstance(node, FuncDefNode):
+            return set()
+
+        return names
+
+    def resolve_var_table(self, var_name, context):
+        """Pick the symbol table used to read/write a variable."""
+        if (
+            var_name in context.function_globals
+            and context.program_symbol_table is not None
+        ):
+            return context.program_symbol_table
+        return context.symbol_table
 
     def visit_ListNode(self, node, context):
         res = RTResult()
@@ -212,7 +237,8 @@ class Interpreter:
     def visit_VarAccessNode(self, node, context):
         res = RTResult()
         var_name = node.var_name_tok.value
-        value = context.symbol_table.get(var_name)
+        table = self.resolve_var_table(var_name, context)
+        value = table.get(var_name)
 
         if value is SymbolTable._MISSING:
             return res.failure(RTError(
@@ -231,8 +257,13 @@ class Interpreter:
         if res.error:
             return res
 
-        context.symbol_table.set(var_name, value)
+        table = self.resolve_var_table(var_name, context)
+        table.set(var_name, value)
         return res.success(value)
+
+    def visit_GlobalNode(self, node, context):
+        # Declarations are collected when the function is defined.
+        return RTResult().success(Number.null)
 
     def visit_BinOpNode(self, node, context):
         res = RTResult()
@@ -339,7 +370,14 @@ class Interpreter:
         func_name = node.var_name_tok.value if node.var_name_tok else None
         body_node = node.body_node
         arg_names = [arg_name.value for arg_name in node.arg_name_toks]
-        func_value = Function(func_name, body_node, arg_names, node.should_return_null).set_context(context).set_pos(
+        global_names = self.collect_global_names(body_node)
+        func_value = Function(
+            func_name,
+            body_node,
+            arg_names,
+            node.should_return_null,
+            global_names,
+        ).set_context(context).set_pos(
             node.pos_start, node.pos_end
         )
         if node.var_name_tok:

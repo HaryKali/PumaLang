@@ -17,6 +17,13 @@ class BreakNode:
         self.pos_end = pos_end
 
 
+class GlobalNode:
+    def __init__(self, var_name_toks, pos_start, pos_end):
+        self.var_name_toks = var_name_toks
+        self.pos_start = pos_start
+        self.pos_end = pos_end
+
+
 class ListNode:
     def __init__(self, element_nodes, pos_start, pos_end):
         self.element_nodes = element_nodes

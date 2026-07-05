@@ -118,7 +118,7 @@ Comments start with `#`.
 ### Keywords
 
 ```
-var and or not if then elif else for to step while func end return continue break
+var and or not if then elif else for to step while func end return continue break global
 ```
 
 ### Data Types
@@ -195,6 +195,24 @@ end
 print(sum_to(5))
 ```
 
+### Global Variables in Functions
+
+By default, `var` inside a function creates a **local** binding. Use `global` to read and write a name in the **program scope** instead:
+
+```plaintext
+var counter = 0
+
+func bump()
+    global counter
+    var counter = counter + 1
+end
+
+bump()
+print(counter)
+```
+
+Multiple names: `global x, y, z`
+
 ## Lists
 
 ```plaintext
@@ -259,6 +277,7 @@ python -m pumalang.shell examples/run_fibonacci.pumalang
 | `test_if.pumalang` | Conditionals |
 | `test_loops.pumalang` | Loops |
 | `test_function.pumalang` | Functions |
+| `test_global.pumalang` | Global variables |
 | `test_lists.pumalang` | Lists |
 | `test_dict.pumalang` | Dictionaries |
 | `test_builtins.pumalang` | Built-ins |

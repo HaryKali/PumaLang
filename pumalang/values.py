@@ -340,6 +340,8 @@ class Context:
         self.parent = parent
         self.parent_entry_pos = parent_entry_pos
         self.symbol_table = None
+        self.program_symbol_table = None
+        self.function_globals = frozenset()
 
 
 class SymbolTable:
@@ -413,6 +415,9 @@ class BaseFunction(Value):
         )
         new_context = Context(self.name, self.context, self.pos_start)
         new_context.symbol_table = SymbolTable(parent=enclosing)
+        if self.context is not None:
+            new_context.program_symbol_table = self.context.program_symbol_table
+            new_context.function_globals = self.context.function_globals
         return new_context
 
     def check_args(self, arg_names, args):
@@ -448,11 +453,12 @@ class BaseFunction(Value):
 
 
 class Function(BaseFunction):
-    def __init__(self, name, body_node, arg_names, should_return_null):
+    def __init__(self, name, body_node, arg_names, should_return_null, global_names=None):
         super().__init__(name)
         self.body_node = body_node
         self.arg_names = arg_names
         self.should_return_null = should_return_null
+        self.global_names = frozenset(global_names or ())
 
     def execute(self, args):
         from pumalang.interpreter import Interpreter
@@ -460,6 +466,7 @@ class Function(BaseFunction):
         res = RTResult()
         interpreter = Interpreter()
         exec_ctx = self.generate_new_context()
+        exec_ctx.function_globals = self.global_names
         res.register(self.check_and_populate_args(self.arg_names, args, exec_ctx=exec_ctx))
         if res.should_return():
             return res
@@ -472,7 +479,7 @@ class Function(BaseFunction):
         return res.success(return_value)
 
     def copy(self):
-        copy = Function(self.name, self.body_node, self.arg_names, self.should_return_null)
+        copy = Function(self.name, self.body_node, self.arg_names, self.should_return_null, self.global_names)
         copy.set_context(self.context)
         copy.set_pos(self.pos_start, self.pos_end)
         return copy

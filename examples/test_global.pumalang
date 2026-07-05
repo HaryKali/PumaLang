@@ -1,0 +1,10 @@
+var counter = 0
+
+func bump()
+    global counter
+    var counter = counter + 1
+end
+
+bump()
+bump()
+print(counter)

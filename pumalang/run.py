@@ -23,6 +23,7 @@ def run(fn, text, debug=False, program_scope=None):
     interpreter = Interpreter()
     context = Context("<program>")
     context.symbol_table = program_scope if program_scope is not None else create_program_scope()
+    context.program_symbol_table = context.symbol_table
     result = interpreter.visit(ast.node, context)
 
     return result.value, result.error
